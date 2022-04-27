@@ -17,8 +17,65 @@ SELECT * FROM animals WHERE name <> 'Gabumon';
 -- Find all animals with a weight between 10.4kg and 17.3kg (including the animals with the weights that equals precisely 10.4kg or 17.3kg)
 SELECT * FROM animals WHERE weight_kg BETWEEN 10.4 AND 17.3;
 
+
+-- First Transaction
+    -- Begin the transaction
+    BEGIN;
+    -- Set the condition (update the species column to be inspecified)
+    UPDATE animals
+    SET species = 'unspecified';
+    -- Then undo these changes by roll back
+    ROLLBACK;
+
+-- Second Transaction
+  -- Begin the transaction
+      BEGIN;
+  -- Set the condition (update the species column Where the name ends with 'mon')
+    UPDATE animals
+    SET species = 'digimon'
+    WHERE name LIKE '%mon';
+  -- Set the condition (update the species column Where the name doesn't end with 'mon')
+    UPDATE animals
+    SET species = 'pokemon'
+    WHERE species IS NULL;
+  -- Last step to save the changes
+    COMMIT;
+
+-- Third Transaction
+    -- Begin the transaction
+      BEGIN;
+    -- Delete the table from the database
+      DROP TABLE animals;
+    -- Check if the table exists
+      SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename  = 'animals');
+      -- returns false
+    -- undo the changes by rollback
+      ROLLBACK;
+    -- Check if the table exists
+      SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename  = 'animals');
+      -- return true
+
+-- Fourth Transaction
+  -- Begin the transaction
+    BEGIN;
+  -- Delete the animals where got born after 2022
+    DELETE FROM animals
+    WHERE date_of_birth >= '2022-01-01';
+  -- Do a savepoint
+    SAVEPOINT delete_animals;
+  -- make the weight to be negative
+    UPDATE animals SET weight_kg = weight_kg * (-1);
+  -- Rollback to the first savepoint
+    ROLLBACK TO delete_animals;
+  -- Modify the weight to be all positive
+    UPDATE animals SET weight_kg = weight_kg * (-1) WHERE weight_kg < 0;
+  -- Then commit that changes
+    COMMIT;
+
+
+
 -- How many animals are there? 10
-UPDATE animals SET weight_kg = weight_kg * (-1) WHERE weight_kg < 0;
+SELECT COUNT(*) FROM animals;
 
 -- How many animals have never tried to escape?
 SELECT COUNT(escape_attempts)
@@ -26,9 +83,8 @@ FROM animals
 WHERE escape_attempts = 0;
 
 -- What is the average weight of animals?
-SELECT COUNT(escape_attempts)
-FROM animals
-WHERE escape_attempts = 0;
+SELECT AVG(weight_kg)
+FROM animals;
 
 -- Who escapes the most, neutered or not neutered animals?
 SELECT neutered, SUM(escape_attempts) AS escape_attempts
