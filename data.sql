@@ -71,6 +71,20 @@ VALUES
 
 -- add "join table" for visits Activity
 
+INSERT INTO vets (name,age,date_of_graduation)
+VALUES
+('William Tatcher',45,'2000-04-23'),
+('Maisy Smith',26,'2019-01-17'),
+('Stephanie Mendez',64,'1981-05-04'),
+('Jack Harkness',38,'2008-06-08');
+
+INSERT INTO specializations (vet_id, spec_id) 
+VALUES
+((SELECT id FROM vets WHERE name = 'William Tatcher'), (SELECT id FROM species WHERE name = 'Pokemon')),
+((SELECT id FROM vets WHERE name = 'Stephanie Mendez'), (SELECT id FROM species WHERE name = 'Pokemon')),
+((SELECT id FROM vets WHERE name = 'Stephanie Mendez'), (SELECT id FROM species WHERE name = 'Digimon')),
+((SELECT id FROM vets WHERE name = 'Jack Harkness'), (SELECT id FROM species WHERE name = 'Digimon'));
+
 INSERT INTO visits (vet_id, anim_id, date_of_visit)
 VALUES
 ((SELECT id FROM vets WHERE name = 'William Tatcher'), (SELECT id FROM animals WHERE name = 'Agumon'), '2020-05-24'),
