@@ -62,24 +62,20 @@ ALTER TABLE animals
     COMMIT;
 
 -- add "join table" for visits Activity
-CREATE TABLE vets (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    age INT,
-    date_of_graduation DATE
+CREATE TABLE vets(
+id INT GENERATED ALWAYS AS IDENTITY,
+name VARCHAR(250),
+age INTEGER,
+date_of_graduation DATE
 );
 
-CREATE TABLE specializations (
-    vet_id INT,
-    spec_id INT,
-    CONSTRAINT fk_vets FOREIGN KEY(vet_id) REFERENCES vets(id),
-    CONSTRAINT fk_species FOREIGN KEY(spec_id) REFERENCES species(id)
+CREATE TABLE specializations(
+  vet_id INTEGER,
+  species_id INTEGER
 );
 
-CREATE TABLE visits (
-    vet_id INT,
-    anim_id INT,
-    date_of_visit DATE,
-    CONSTRAINT fk_vets FOREIGN KEY(vet_id) REFERENCES vets(id),
-    CONSTRAINT fk_animals FOREIGN KEY(anim_id) REFERENCES animals(id)
+CREATE TABLE visits(
+animal_id INTEGER,
+vet_id INTEGER,
+visit_date DATE
 );
